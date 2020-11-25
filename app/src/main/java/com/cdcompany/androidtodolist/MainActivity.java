@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import io.realm.mongodb.RealmResultTask;
 import io.realm.mongodb.User;
 import io.realm.Realm;
@@ -33,21 +34,31 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private App realmApp;
-    private MongoClient mongoClient;
     private MongoCollection<Document> mongoCollection;
     private User user;
     private String TAG = "MainActivity";
-    private TextView tv;
+    private SwipeRefreshLayout pullToRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        pullToRefresh = findViewById(R.id.pullToRefresh);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadData();
+            }
+        });
 
     }
 
     protected void onStart() {
         super.onStart();
+        loadData();
+    }
+
+    private void loadData() {
         setupDbConnection();
         new Thread(new Runnable() {
             @Override
@@ -57,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         setupRecyclerView(descriptionList);
+                        pullToRefresh.setRefreshing(false);
                     }
                 });
             }
