@@ -59,10 +59,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        setupDbConnection();
         new Thread(new Runnable() {
             @Override
             public void run() {
+                setupDbConnection();
                 List<String> descriptionList = findDescriptionList();
                 runOnUiThread(new Runnable() {
                     @Override
